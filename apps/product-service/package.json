@@ -1,0 +1,9 @@
+{
+  "name": "product-service",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "db:migrate" : "bunx --bun prisma migrate dev",
+    "db:generate" : "bunx --bun prisma generate"
+  }
+}

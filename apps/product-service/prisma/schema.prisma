@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+  runtime  = "bun"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas = ["product-serivce"]
+}
+
+model ProductCategory {
+  
+  id            Int     @id @default(autoincrement())
+  name          String  @db.VarChar(50) 
+  description   String  @db.VarChar(100) 
+  is_active     Boolean @default(true)
+  products      Product[]
+
+  @@map("product_categories")
+  @@schema("product-serivce") 
+}
+
+model Product {
+  id                  Int     @id @default(autoincrement())
+  name                String  @db.VarChar(50) 
+  description         String  @db.VarChar(100) 
+  is_active           Boolean @default(true)
+  product_category_id Int
+  image_url           String
+  price               Decimal @db.Decimal(10, 2) 
+
+  // RELATION
+  product_category    ProductCategory @relation(fields: [product_category_id], references: [id])
+  product_stock       ProductStock?
+
+  @@map("products")
+  @@schema("product-serivce") 
+}
+
+model ProductStock {
+  id                  Int     @id @default(autoincrement())
+ 
+  stock               Int     
+  reserve_stock       Int
+
+  product_id          Int     @unique(map: "uq_stock_product_id")
+  is_active           Boolean @default(true)
+
+  // RELATION
+  product   Product @relation(fields: [product_id], references: [id])
+
+  @@map("product_stocks")
+  @@schema("product-serivce") 
+}
