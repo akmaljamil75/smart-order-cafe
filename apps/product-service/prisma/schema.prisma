@@ -16,6 +16,8 @@ model ProductCategory {
   description   String  @db.VarChar(100) 
   is_active     Boolean @default(true)
   products      Product[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@map("product_categories")
   @@schema("product-serivce") 
@@ -29,6 +31,8 @@ model Product {
   product_category_id Int
   image_url           String
   price               Decimal @db.Decimal(10, 2) 
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   // RELATION
   product_category    ProductCategory @relation(fields: [product_category_id], references: [id])
@@ -46,6 +50,8 @@ model ProductStock {
 
   product_id          Int     @unique(map: "uq_stock_product_id")
   is_active           Boolean @default(true)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
 
   // RELATION
   product   Product @relation(fields: [product_id], references: [id])

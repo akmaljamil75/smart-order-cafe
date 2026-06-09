@@ -1,6 +1,7 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "apps/product-service/prisma/generated/prisma/client";
 import { databaseConf } from "@shared/config";
+import { PinoLogger } from "@shared/logger";
 
 const adapter = new PrismaPg({
   application_name : databaseConf.DATABASE_APPLICATION_NAME,
@@ -12,9 +13,59 @@ const adapter = new PrismaPg({
   maxLifetimeSeconds : databaseConf.DATABASE_CONNECTION_MAX_LIFETIME_SECONDS
 });
 
-export const prisma = new PrismaClient({
+const prismaClient = new PrismaClient({
   adapter,
   transactionOptions : {
     timeout : databaseConf.DATABASE_TIMEOUT_TRANSACTION_IN_MS
   },
 });
+
+export class PrismaInfrastructure {
+  constructor(
+    private readonly logger: PinoLogger
+  ) {}
+
+  connectDB = async (correlationId : string) => {
+    this.logger.info("Starting database connection...", {correlationId});
+
+    try {
+      await prismaClient.$connect();
+
+      this.logger.info(
+        "Database connection established successfully",
+        {correlationId},
+      );
+    } catch (error) {
+      this.logger.error(
+        "Failed to connect to database",
+        {correlationId},
+        error instanceof Error ? error : new Error(String(error))
+      );
+      process.exit(1);
+    }
+  };
+
+  disconnectDB = async (correlationId : string) => {
+    this.logger.info("Closing database connection...",{correlationId});
+    try {
+      await prismaClient.$disconnect();
+
+      this.logger.info(
+        "Database connection closed successfully",
+        {correlationId}
+      );
+    } catch (error) {
+      this.logger.error(
+        "Failed to disconnect from database",
+        {correlationId},
+        error instanceof Error ? error : new Error(String(error))
+      );
+      process.exit(1);
+    }
+  };
+
+  getPrismaClient = () => {
+    return prismaClient;
+  };
+
+}

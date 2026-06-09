@@ -16,9 +16,9 @@ services:
       retries: 5
       start_period: 10s
 
-  minio:
+  redis:
     image: redis:latest
-    container_name: redis
+    container_name: redis-coffe
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -26,6 +26,35 @@ services:
       - redis_data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: keycloak
+    restart: unless-stopped
+    command: start-dev
+    environment:
+      # Admin credentials for the Keycloak master realm
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      # Database backend
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/coffe
+      KC_DB_USERNAME: coffe
+      KC_DB_PASSWORD: coffe
+      # Hostname configuration (dev mode — no HTTPS required)
+      KC_HOSTNAME: localhost
+      KC_HTTP_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 8
+      start_period: 30s
+
 volumes:
   pgdata:
-  minio-data:
+  redis_data:

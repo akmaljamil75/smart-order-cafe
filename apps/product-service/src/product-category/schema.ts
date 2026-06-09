@@ -18,17 +18,6 @@ export const createProductCategory = z.object({
 });
 
 export const updateProductCategory = z.object({
-    id: z
-        .number({
-            message: "Category ID must be a number",
-        })
-        .int({
-            message: "Category ID must be an integer",
-        })
-        .positive({
-            message: "Category ID must be greater than 0",
-        }),
-
     name: z
         .string({
             message: "Category name must be a string",
