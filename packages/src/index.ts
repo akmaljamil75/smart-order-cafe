@@ -5,3 +5,4 @@ export * from './logger';
 export * from './types';
 export * from './plugins';
 export * from './errors';
+export * from './utils';

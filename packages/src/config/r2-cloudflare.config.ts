@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const conf = z.object({
+const conf = z.object({
   R2_CLOUDE_FLARE_ACCESS_KEY: z
     .string({
       message: "R2_CLOUDE_FLARE_ACCESS_KEY must be a string",

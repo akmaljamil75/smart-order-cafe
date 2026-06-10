@@ -25,7 +25,7 @@ export class PrismaInfrastructure {
     private readonly logger: PinoLogger
   ) {}
 
-  connectDB = async (correlationId : string) => {
+  connect = async (correlationId : string) => {
     this.logger.info("Starting database connection...", {correlationId});
 
     try {
@@ -45,7 +45,7 @@ export class PrismaInfrastructure {
     }
   };
 
-  disconnectDB = async (correlationId : string) => {
+  disconnect = async (correlationId : string) => {
     this.logger.info("Closing database connection...",{correlationId});
     try {
       await prismaClient.$disconnect();
